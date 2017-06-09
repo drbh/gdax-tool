@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+
+    <title>GDAX TOOL</title>
+
+    <h3>Ether</h3>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+{#    <script type="text/javascript" charset="utf-8">#}
+{#        $(document).ready(function() {#}
+{#            // Use a "/test" namespace.#}
+{#            // An application can open a connection on multiple namespaces, and#}
+{#            // Socket.IO will multiplex all those connections on a single#}
+{#            // physical channel. If you don't care about multiple channels, you#}
+{#            // can set the namespace to an empty string.#}
+{#            namespace = '/test';#}
+{#            // Connect to the Socket.IO server.#}
+{#            // The connection URL has the following format:#}
+{#            //     http[s]://<domain>:<port>[/<namespace>]#}
+{#            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);#}
+{#            // Event handler for new connections.#}
+{#            // The callback function is invoked when a connection with the#}
+{#            // server is established.#}
+{#            socket.on('connect', function() {#}
+{#                socket.emit('my_event', {data: 'I\'m connected!'});#}
+{#            });#}
+{#            // Event handler for server sent data.#}
+{#            // The callback function is invoked whenever the server emits data#}
+{#            // to the client. The data is then displayed in the "Received"#}
+{#            // section of the page.#}
+{#            socket.on('my_response', function(msg) {#}
+{#                $('#log').append('<br>' + $('<div/>').text('Received #' + msg.count + ': ' + msg.data).html());#}
+{#            });#}
+{#            // Interval function that tests message latency by sending a "ping"#}
+{#            // message. The server then responds with a "pong" message and the#}
+{#            // round trip time is measured.#}
+{#            var ping_pong_times = [];#}
+{#            var start_time;#}
+{#            window.setInterval(function() {#}
+{#                start_time = (new Date).getTime();#}
+{#                socket.emit('my_ping');#}
+{#            }, 1000);#}
+{#            // Handler for the "pong" message. When the pong is received, the#}
+{#            // time from the ping is stored, and the average of the last 30#}
+{#            // samples is average and displayed.#}
+{#            socket.on('my_pong', function() {#}
+{#                var latency = (new Date).getTime() - start_time;#}
+{#                ping_pong_times.push(latency);#}
+{#                ping_pong_times = ping_pong_times.slice(-30); // keep last 30 samples#}
+{#                var sum = 0;#}
+{#                for (var i = 0; i < ping_pong_times.length; i++)#}
+{#                    sum += ping_pong_times[i];#}
+{#                $('#ping-pong').text(Math.round(10 * sum / ping_pong_times.length) / 10);#}
+{#            });#}
+{#            // Handlers for the different forms in the page.#}
+{#            // These accept data from the user and send it to the server in a#}
+{#            // variety of ways#}
+{#            $('form#emit').submit(function(event) {#}
+{#                socket.emit('my_event', {data: $('#emit_data').val()});#}
+{#                return false;#}
+{#            });#}
+{#            $('form#broadcast').submit(function(event) {#}
+{#                socket.emit('my_broadcast_event', {data: $('#broadcast_data').val()});#}
+{#                return false;#}
+{#            });#}
+{#            $('form#join').submit(function(event) {#}
+{#                socket.emit('join', {room: $('#join_room').val()});#}
+{#                return false;#}
+{#            });#}
+{#            $('form#leave').submit(function(event) {#}
+{#                socket.emit('leave', {room: $('#leave_room').val()});#}
+{#                return false;#}
+{#            });#}
+{#            $('form#send_room').submit(function(event) {#}
+{#                socket.emit('my_room_event', {room: $('#room_name').val(), data: $('#room_data').val()});#}
+{#                return false;#}
+{#            });#}
+{#            $('form#close').submit(function(event) {#}
+{#                socket.emit('close_room', {room: $('#close_room').val()});#}
+{#                return false;#}
+{#            });#}
+{#            $('form#disconnect').submit(function(event) {#}
+{#                socket.emit('disconnect_request');#}
+{#                return false;#}
+{#            });#}
+{#        });#}
+{#    </script>#}
+{#</head>#}
+{#<body>#}
+{#    <h1>Flask-SocketIO Test</h1>#}
+{#    <p>Async mode is: <b>{{ async_mode }}</b></p>#}
+{#    <p>Average ping/pong latency: <b><span id="ping-pong"></span>ms</b></p>#}
+{#    <h2>Send:</h2>#}
+{#    <form id="emit" method="POST" action='#'>#}
+{#        <input type="text" name="emit_data" id="emit_data" placeholder="Message">#}
+{#        <input type="submit" value="Echo">#}
+{#    </form>#}
+{#    <form id="broadcast" method="POST" action='#'>#}
+{#        <input type="text" name="broadcast_data" id="broadcast_data" placeholder="Message">#}
+{#        <input type="submit" value="Broadcast">#}
+{#    </form>#}
+{#    <form id="join" method="POST" action='#'>#}
+{#        <input type="text" name="join_room" id="join_room" placeholder="Room Name">#}
+{#        <input type="submit" value="Join Room">#}
+{#    </form>#}
+{#    <form id="leave" method="POST" action='#'>#}
+{#        <input type="text" name="leave_room" id="leave_room" placeholder="Room Name">#}
+{#        <input type="submit" value="Leave Room">#}
+{#    </form>#}
+{#    <form id="send_room" method="POST" action='#'>#}
+{#        <input type="text" name="room_name" id="room_name" placeholder="Room Name">#}
+{#        <input type="text" name="room_data" id="room_data" placeholder="Message">#}
+{#        <input type="submit" value="Send to Room">#}
+{#    </form>#}
+{#    <form id="close" method="POST" action="#">#}
+{#        <input type="text" name="close_room" id="close_room" placeholder="Room Name">#}
+{#        <input type="submit" value="Close Room">#}
+{#    </form>#}
+{#    <form id="disconnect" method="POST" action="#">#}
+{#        <input type="submit" value="Disconnect">#}
+{#    </form>#}
+{#    <h2>Receive:</h2>#}
+{#    <div id="log"></div>#}
+
+
+
+    <p id='test'>Hello</p>
+
+    <p>Buy/Sell</p>
+    <div id="buy-sell-eth"> </div>
+
+    <p>Historic Pricing</p>
+
+    <style>
+        #big{
+            max-width: 70%;
+            max-height: 600px;
+            overflow-y: scroll;
+        }
+        #big-graph img{
+            height: 100%;
+            width: 100%;
+            object-fit: contain
+        }
+        body {
+            background-color: #15232c;
+            color: white;
+        }
+
+    </style>
+
+    <div id="big" class="container-fluid">
+
+            <div id="small-table"> </div>
+            <div id="big-graph"> </div>
+            <div id="big-table"> </div>
+    </div>
+
+
+    <h3>Lite Coin</h3>
+
+    <p>Buy/Sell</p>
+    <div id="buy-sell-lc"> </div>
+
+    <p>Historic Pricing</p>
+    <div id="big-table"> </div>
+
+</head>
+<body>
+
+
+<script>
+
+        $(document).ready(function(){
+
+
+            var html_table = {{ big_table|tojson }};
+            $('#big-table').html(html_table);
+            $( "#big-table table" ).addClass( "table" );
+
+            var html_table = {{ graph|tojson }};
+            $('#big-graph').html(html_table);
+
+
+            var small_table = {{ small_table|tojson }};
+            $('#small-table').html(small_table);
+            $('#small-table table').addClass( "table" );
+
+            namespace = '/test'; // change to an empty string to use the global namespace
+            // the socket.io documentation recommends sending an explicit package upon connection
+            // this is specially important when using the global namespace
+            var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+
+            console.log('http://' + document.domain + ':' + location.port + namespace)
+
+            socket.on('connect', function(msg) {
+                socket.emit('my event', {data: 'I\'m connected!'});
+                $('#test').html('<p>' +' CONNECTED '+ '</p>');
+            });
+
+            socket.on('my response', function(msg){
+                console.log(msg);
+{#                $('#test').html('<p>' + msg.time + '</p>');#}
+            });
+
+            socket.on('message', function(msg){
+                console.log(msg);
+{#                $('#test').html('<p>' + msg.time + '</p>');#}
+            });
+
+        });
+
+</script>
+</body>
+</html>
